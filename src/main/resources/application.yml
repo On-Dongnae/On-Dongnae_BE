@@ -2,35 +2,18 @@ spring:
   application:
     name: on-dongnae
 
-  # PostgreSQL
-  datasource:
-    url: jdbc:postgresql://localhost:5432/on_dongnae
-    username: odn_user
-    password: odn_pass
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 30000
-      connection-timeout: 20000
+  profiles:
+    active: local   # local | prod
 
-  # JPA
+  # JPA (공통)
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: ${JPA_SHOW_SQL:true}
     open-in-view: false
 
-  # Redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
+server:
+  port: ${SERVER_PORT:8080}
