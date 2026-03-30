@@ -3,6 +3,9 @@ package com.semo.group1.on_dongnae.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "regions")
 @Getter
@@ -25,8 +28,8 @@ public class Region {
     private String unit;
 
     @Column(precision = 10, scale = 7)
-    private Double latitude;
+    private BigDecimal latitude;
 
     @Column(precision = 10, scale = 7)
-    private Double longitude;
+    private BigDecimal longitude;
 }
