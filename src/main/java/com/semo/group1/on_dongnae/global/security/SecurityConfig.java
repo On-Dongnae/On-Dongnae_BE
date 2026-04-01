@@ -41,6 +41,8 @@ public class SecurityConfig {
 
                 // 3. 서비스 사용 규제
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger UI 접속 관련 경로 허용
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         // 회원가입/로그인 창, 동네 검색은 누구나 사용 가능
                         .requestMatchers("/api/users/signup", "/api/users/login", "/api/regions", "/api/regions/search", "/error").permitAll()
                         // 그 외에 피드 달기, 미션하기 등등 '핵심' 기능은 무조건 JWT 받은 사람만 사용 가능
