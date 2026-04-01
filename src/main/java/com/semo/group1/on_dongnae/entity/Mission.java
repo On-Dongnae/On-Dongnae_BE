@@ -17,7 +17,7 @@ public class Mission extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mission_id")
-    private Long missionId;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

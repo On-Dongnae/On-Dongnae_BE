@@ -16,16 +16,13 @@ public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "region_id")
-    private Long regionId;
+    private Long id;
 
     @Column(nullable = false, length = 50)
     private String city;
 
     @Column(nullable = false, length = 50)
     private String district;
-
-    @Column(nullable = false, length = 50)
-    private String unit;
 
     @Column(precision = 10, scale = 7)
     private BigDecimal latitude;
