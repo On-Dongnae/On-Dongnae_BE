@@ -44,39 +44,68 @@ public class MissionService {
         return MissionDto.fromEntity(mission);
     }
 
-    // 3. 오늘의 미션 배정 (INITIAL 타입 중 랜덤 1개)
+    // 3. 오늘의 미션 일괄 배정 (INITIAL 타입 모두 배정)
     @Transactional
-    public UserMissionDto assignDailyMission() {
+    public List<UserMissionDto> assignDailyMission() {
         User user = securityUtil.getCurrentUser();
         LocalDate today = LocalDate.now();
 
-        // 중복 배정 체크 (오늘은 이미 미션을 받았는지)
-        if (userMissionRepository.existsByUserAndAssignedDate(user, today)) {
-            throw new CustomException(ErrorCode.ALREADY_ASSIGNED);
+        // 1. 해당 유저가 오늘 배정받은 미션 목록 조회
+        List<UserMission> alreadyAssigned = userMissionRepository.findByUserAndAssignedDate(user, today);
+        java.util.Set<Long> assignedMissionIds = alreadyAssigned.stream()
+                .map(um -> um.getMission().getId())
+                .collect(Collectors.toSet());
+
+        // 2. 전체 활성 INITIAL 미션 조회
+        List<Mission> allDailyMissions = missionRepository.findByIsActiveTrueAndType(MissionType.INITIAL);
+
+        // 3. 아직 배정되지 않은 미션 필터링
+        List<Mission> missionsToAssign = allDailyMissions.stream()
+                .filter(m -> !assignedMissionIds.contains(m.getId()))
+                .collect(Collectors.toList());
+
+        // 4. 새 미션 배정
+        List<UserMission> newlyAssigned = new java.util.ArrayList<>();
+        for (Mission mission : missionsToAssign) {
+            UserMission userMission = UserMission.builder()
+                    .user(user)
+                    .mission(mission)
+                    .assignedDate(today)
+                    .build();
+            newlyAssigned.add(userMission);
         }
 
-        // INITIAL 타입의 활성화된 미션 중 랜덤 1개 가져오기
-        Mission mission = missionRepository.findRandomActiveMissionByType(MissionType.INITIAL.name())
-                .orElseThrow(() -> new CustomException(ErrorCode.MISSION_NOT_FOUND));
+        if (!newlyAssigned.isEmpty()) {
+            userMissionRepository.saveAll(newlyAssigned);
+        } else if (alreadyAssigned.isEmpty()) {
+            // 오늘 배정받은 것도 없고 배정할 것도 없으면 미션이 없는 것
+            throw new CustomException(ErrorCode.MISSION_NOT_FOUND);
+        } else {
+            // 새로 배정할 건 없는데 이미 받은 게 있으면 그대로 기존 목록 반환
+            // (혹은 기존처럼 ALREADY_ASSIGNED 에러를 던질 수 있지만, 목록을 보여주는 게 더 자연스럽습니다)
+        }
 
-        // 유저 미션 생성
-        UserMission userMission = UserMission.builder()
-                .user(user)
-                .mission(mission)
-                .assignedDate(today)
-                .build();
+        // 5. 이미 받은 미션 + 오늘 새로 받은 미션 합쳐서 반환
+        List<UserMission> result = new java.util.ArrayList<>(alreadyAssigned);
+        result.addAll(newlyAssigned);
 
-        userMissionRepository.save(userMission);
-
-        return UserMissionDto.fromEntity(userMission);
+        return result.stream()
+                .map(UserMissionDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    // 4. 내 미션 목록 조회
-    public List<UserMissionDto> getMyMissions() {
+    // 4. 내 미션 목록 조회 (옵션: 타입별 필터링)
+    public List<UserMissionDto> getMyMissions(MissionType type) {
         User user = securityUtil.getCurrentUser();
         
-        return userMissionRepository.findByUser(user)
-                .stream()
+        List<UserMission> userMissions;
+        if (type != null) {
+            userMissions = userMissionRepository.findByUserAndMission_Type(user, type);
+        } else {
+            userMissions = userMissionRepository.findByUser(user);
+        }
+        
+        return userMissions.stream()
                 .map(UserMissionDto::fromEntity)
                 .collect(Collectors.toList());
     }

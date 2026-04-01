@@ -14,6 +14,7 @@ public class UserMissionDto {
     private Long id;
     private MissionDto mission;
     private UserMissionStatus status;
+    private Boolean isAchieved; // 상태 기반 달성 여부 명시
     private LocalDate assignedDate;
     private LocalDateTime completedAt;
 
@@ -22,6 +23,7 @@ public class UserMissionDto {
                 .id(userMission.getId())
                 .mission(MissionDto.fromEntity(userMission.getMission()))
                 .status(userMission.getStatus())
+                .isAchieved(userMission.getStatus() == UserMissionStatus.VERIFIED)
                 .assignedDate(userMission.getAssignedDate())
                 .completedAt(userMission.getCompletedAt())
                 .build();

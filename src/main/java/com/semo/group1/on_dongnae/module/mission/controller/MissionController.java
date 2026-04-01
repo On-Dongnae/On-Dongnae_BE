@@ -29,9 +29,9 @@ public class MissionController {
         return ResponseEntity.ok(ApiResponse.ok("미션 정보를 성공적으로 불러왔습니다.", missionService.getMissionById(id)));
     }
 
-    // 3. 오늘의 미션 배정
+    // 3. 오늘의 미션 일괄 배정
     @PostMapping("/daily")
-    public ResponseEntity<ApiResponse<UserMissionDto>> assignDailyMission() {
-        return ResponseEntity.ok(ApiResponse.created("오늘의 미션이 성공적으로 배정되었습니다.", missionService.assignDailyMission()));
+    public ResponseEntity<ApiResponse<List<UserMissionDto>>> assignDailyMission() {
+        return ResponseEntity.ok(ApiResponse.created("오늘의 미션이 성공적으로 모두 배정되었습니다.", missionService.assignDailyMission()));
     }
 }
