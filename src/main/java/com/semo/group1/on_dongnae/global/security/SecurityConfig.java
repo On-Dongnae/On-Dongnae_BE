@@ -41,8 +41,8 @@ public class SecurityConfig {
 
                 // 3. 서비스 사용 규제
                 .authorizeHttpRequests(auth -> auth
-                        // 회원가입/로그인 창은 누구나 사용 가능
-                        .requestMatchers("/api/users/signup", "/api/users/login", "/error").permitAll()
+                        // 회원가입/로그인 창, 동네 검색은 누구나 사용 가능
+                        .requestMatchers("/api/users/signup", "/api/users/login", "/api/regions", "/api/regions/search", "/error").permitAll()
                         // 그 외에 피드 달기, 미션하기 등등 '핵심' 기능은 무조건 JWT 받은 사람만 사용 가능
                         .anyRequest().authenticated()
                 )

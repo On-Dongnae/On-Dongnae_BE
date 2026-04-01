@@ -21,7 +21,7 @@ public class MissionVerification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mission_verification_id")
-    private Long missionVerificationId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_mission_id", nullable = false)
