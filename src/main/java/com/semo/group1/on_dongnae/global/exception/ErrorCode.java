@@ -29,6 +29,7 @@ public enum ErrorCode {
     // 409 Conflict
     DUPLICATE_EMAIL("이미 가입된 이메일입니다.", 409),
     ALREADY_VERIFIED("이미 인증된 미션입니다.", 409),
+    ALREADY_ASSIGNED("해당 일자에 이미 미션을 배정받았습니다.", 409),
 
     // 500 Internal Server Error
     INTERNAL_SERVER_ERROR("서버 내부 오류가 발생했습니다.", 500);
