@@ -16,7 +16,7 @@ spring:
   # JPA (로컬)
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
 
   # Redis (로컬 Docker)
