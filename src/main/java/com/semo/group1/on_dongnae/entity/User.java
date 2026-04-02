@@ -41,6 +41,14 @@ public class User extends BaseEntity {
     @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
 
+    public void updateStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
+
     @Column(name = "profile_image_url", length = 225)
     private String profileImageUrl;
 

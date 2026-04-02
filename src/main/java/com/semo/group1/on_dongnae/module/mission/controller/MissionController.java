@@ -29,7 +29,13 @@ public class MissionController {
         return ResponseEntity.ok(ApiResponse.ok("미션 정보를 성공적으로 불러왔습니다.", missionService.getMissionById(id)));
     }
 
-    // 3. 오늘의 미션 일괄 배정
+    // 3. 오늘의 미션 조회 (첫 접속 시 자동 배정)
+    @GetMapping("/today")
+    public ResponseEntity<ApiResponse<List<UserMissionDto>>> getTodayMissions() {
+        return ResponseEntity.ok(ApiResponse.ok("오늘의 미션 목록입니다.", missionService.getTodayMissions()));
+    }
+
+    // 4. 오늘의 미션 일괄 배정 (수동)
     @PostMapping("/daily")
     public ResponseEntity<ApiResponse<List<UserMissionDto>>> assignDailyMission() {
         return ResponseEntity.ok(ApiResponse.created("오늘의 미션이 성공적으로 모두 배정되었습니다.", missionService.assignDailyMission()));
