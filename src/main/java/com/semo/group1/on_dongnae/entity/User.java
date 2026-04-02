@@ -48,5 +48,11 @@ public class User extends BaseEntity {
     @Builder.Default
     private Integer totalScore = 0;
 
-
+    // TotalScore 점수 누적 method
+    public void addScore(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("점수는 음수일 수 없습니다.");
+        }
+        this.totalScore +=amount;
+    }
 }

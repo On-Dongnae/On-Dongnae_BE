@@ -45,7 +45,7 @@ public class RankingCache {
         if (n>= regionRankings.size()) return regionRankings;
         return regionRankings.subList(0, n);
     }
-    // 개인 데이터 for API
+    // 개인 최신 데이터 for API
     public void updateUserRanking(List<UserRanking> rankings) {
 
         this.userRankings = Collections.unmodifiableList(new ArrayList<>(rankings));

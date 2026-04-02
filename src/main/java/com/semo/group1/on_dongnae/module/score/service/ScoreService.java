@@ -105,7 +105,10 @@ public class ScoreService {
     public List<ScoreHistoryDto>getMyScoreHistory(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
-        return scoreRepository.findById(userId).stream()
+
+        List<Score> scores = scoreRepository.findByUser_Id(userId);
+
+        return scores.stream()
                 .map(ScoreHistoryDto::fromEntity)
                 .collect(Collectors.toList());
     }

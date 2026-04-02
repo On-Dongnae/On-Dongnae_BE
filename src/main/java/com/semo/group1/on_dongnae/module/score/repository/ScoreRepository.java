@@ -51,4 +51,8 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    // 유저의 점수를 여러개 받아오기 위해서 List 형식으로
+    // ex) 오늘 하루 : 100 + 200 + 100 ....
+    List<Score> findByUser_Id(Long userId);
 }
