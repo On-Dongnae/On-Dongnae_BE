@@ -53,7 +53,19 @@ public class FeedController {
     @GetMapping("/{feedId}")
     public ResponseEntity<ApiResponse<FeedResponseDto>> getFeed(@PathVariable("feedId") Long feedId) {
         FeedResponseDto response = feedService.getFeed(feedId);
-        return ResponseEntity.ok(ApiResponse.ok("피드 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.ok("피드 상세 조회 성공", response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getMyFeeds() {
+        List<FeedResponseDto> response = feedService.getMyFeeds();
+        return ResponseEntity.ok(ApiResponse.ok("내가 작성한 피드 조회 성공", response));
+    }
+
+    @GetMapping("/my-comments")
+    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getMyCommentedFeeds() {
+        List<FeedResponseDto> response = feedService.getMyCommentedFeeds();
+        return ResponseEntity.ok(ApiResponse.ok("내가 댓글을 작성한 피드 조회 성공", response));
     }
 
     // 4. 피드 수정
