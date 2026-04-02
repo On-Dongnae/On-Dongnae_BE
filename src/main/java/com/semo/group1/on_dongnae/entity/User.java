@@ -55,4 +55,16 @@ public class User extends BaseEntity {
     @Column(name = "total_score", nullable = false)
     @Builder.Default
     private Integer totalScore = 0;
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void addScore(int amount) {
+        this.totalScore += amount;
+    }
 }

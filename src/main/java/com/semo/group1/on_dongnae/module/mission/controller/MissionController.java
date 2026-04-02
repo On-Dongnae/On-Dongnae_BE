@@ -4,12 +4,15 @@ import com.semo.group1.on_dongnae.global.common.ApiResponse;
 import com.semo.group1.on_dongnae.module.mission.dto.MissionDto;
 import com.semo.group1.on_dongnae.module.mission.dto.UserMissionDto;
 import com.semo.group1.on_dongnae.module.mission.service.MissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Mission (미션)", description = "시스템에 등록된 전체 미션 정보 조회")
 @RestController
 @RequestMapping("/api/missions")
 @RequiredArgsConstructor
@@ -17,13 +20,13 @@ public class MissionController {
 
     private final MissionService missionService;
 
-    // 1. 활성화된 모든 미션 조회
+    @Operation(summary = "전체 미션 목록 조회", description = "현재 시스템에 등록된 모든 미션 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<List<MissionDto>>> getAllMissions() {
         return ResponseEntity.ok(ApiResponse.ok("미션 목록을 성공적으로 불러왔습니다.", missionService.getAllActiveMissions()));
     }
 
-    // 2. 미션 상세 조회
+    @Operation(summary = "미션 상세 조회", description = "미션 ID로 미션의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MissionDto>> getMissionById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("미션 정보를 성공적으로 불러왔습니다.", missionService.getMissionById(id)));
@@ -35,7 +38,7 @@ public class MissionController {
         return ResponseEntity.ok(ApiResponse.ok("오늘의 미션 목록입니다.", missionService.getTodayMissions()));
     }
 
-    // 4. 오늘의 미션 일괄 배정 (수동)
+    @Operation(summary = "오늘의 미션 수동 배정", description = "전체 유저에게 오늘의 미션을 강제로 배정합니다.")
     @PostMapping("/daily")
     public ResponseEntity<ApiResponse<List<UserMissionDto>>> assignDailyMission() {
         return ResponseEntity.ok(ApiResponse.created("오늘의 미션이 성공적으로 모두 배정되었습니다.", missionService.assignDailyMission()));

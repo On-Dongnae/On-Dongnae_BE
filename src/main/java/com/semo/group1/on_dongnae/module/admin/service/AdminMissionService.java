@@ -1,6 +1,8 @@
 package com.semo.group1.on_dongnae.module.admin.service;
 
 import com.semo.group1.on_dongnae.entity.Mission;
+import com.semo.group1.on_dongnae.global.exception.CustomException;
+import com.semo.group1.on_dongnae.global.exception.ErrorCode;
 import com.semo.group1.on_dongnae.module.mission.repository.MissionRepository;
 import com.semo.group1.on_dongnae.module.admin.dto.AdminMissionRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,20 @@ public class AdminMissionService {
                 .build();
 
         missionRepository.save(mission);
+    }
+
+    @Transactional
+    public void updateMission(Long missionId, AdminMissionRequestDto request) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+
+        mission.update(
+                request.getName(),
+                request.getDescription(),
+                request.getType(),
+                request.getPointAmount(),
+                request.getStartDate(),
+                request.getEndDate()
+        );
     }
 }

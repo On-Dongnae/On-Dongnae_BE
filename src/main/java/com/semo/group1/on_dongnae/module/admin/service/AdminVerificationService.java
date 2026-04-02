@@ -1,13 +1,14 @@
 package com.semo.group1.on_dongnae.module.admin.service;
 
 import com.semo.group1.on_dongnae.entity.MissionVerification;
+import com.semo.group1.on_dongnae.entity.User;
 import com.semo.group1.on_dongnae.entity.UserMission;
 import com.semo.group1.on_dongnae.entity.enums.UserMissionStatus;
 import com.semo.group1.on_dongnae.entity.enums.VerificationStatus;
 import com.semo.group1.on_dongnae.global.exception.CustomException;
 import com.semo.group1.on_dongnae.global.exception.ErrorCode;
 import com.semo.group1.on_dongnae.module.admin.dto.AiVerificationRequestDto;
-import com.semo.group1.on_dongnae.module.mission.repository.UserMissionRepository;
+import com.semo.group1.on_dongnae.module.score.service.ScoreService;
 import com.semo.group1.on_dongnae.module.verification.dto.VerificationDto;
 import com.semo.group1.on_dongnae.module.verification.repository.MissionVerificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class AdminVerificationService {
 
     private final MissionVerificationRepository verificationRepository;
-    private final UserMissionRepository userMissionRepository;
+    private final ScoreService scoreService;
 
     @Transactional
     public void approveVerification(Long verificationId) {
@@ -31,9 +32,11 @@ public class AdminVerificationService {
 
         verification.approve();
 
-        // 연관된 UserMission 상태도 업데이트
         UserMission userMission = verification.getUserMission();
         userMission.updateStatus(UserMissionStatus.VERIFIED);
+
+        // 포인트 자동 지급
+        grantMissionScore(userMission);
     }
 
     @Transactional
@@ -43,7 +46,6 @@ public class AdminVerificationService {
 
         verification.reject(reason);
 
-        // 연관된 UserMission 상태도 업데이트
         UserMission userMission = verification.getUserMission();
         userMission.updateStatus(UserMissionStatus.REJECTED);
     }
@@ -60,18 +62,32 @@ public class AdminVerificationService {
         MissionVerification verification = verificationRepository.findById(verificationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.VERIFICATION_NOT_FOUND));
 
-        // AI 결과 반영 (엔티티에 직접 적용하거나 전용 메소드 활용)
-        // 💡 MissionVerification 엔티티에 AI 전용 업데이트 로직을 추가하는 것이 좋음
+        UserMission userMission = verification.getUserMission();
+
         if (request.getStatus() == VerificationStatus.APPROVED) {
             verification.approve();
+            userMission.updateStatus(UserMissionStatus.VERIFIED);
+            // AI 승인 시에도 포인트 자동 지급
+            grantMissionScore(userMission);
         } else {
             verification.reject(request.getReason());
+            userMission.updateStatus(UserMissionStatus.REJECTED);
         }
+    }
 
-        // AI 결과 기록 (신뢰도 등)
-        // 💡 엔티티 필드에 직접 접근 (필요하면 setter/메소드 추가)
-        // 여기서는 임시로 리플렉션 대신 직접 필드 업데이트를 가정 (수동 검증 시에는 source가 바뀌므로 주의)
+    /**
+     * 미션 완료 시 포인트를 자동 지급하는 내부 메소드
+     */
+    private void grantMissionScore(UserMission userMission) {
+        User user = userMission.getUser();
+        Long regionId = user.getRegion().getId();
+        Integer pointAmount = userMission.getMission().getPointAmount();
+        Long missionId = userMission.getMission().getId();
 
-        userMissionRepository.save(verification.getUserMission());
+        // Score 테이블에 이력 기록
+        scoreService.addMissionScore(user.getId(), regionId, pointAmount, missionId);
+        // User의 총 점수도 업데이트
+        user.addScore(pointAmount);
     }
 }
+

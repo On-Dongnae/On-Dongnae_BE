@@ -13,26 +13,21 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        SecurityScheme apiKey = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .in(SecurityScheme.In.HEADER)
-                .name("Authorization")
-                .scheme("bearer")
-                .bearerFormat("JWT");
-
-        SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList("Bearer Token");
+        String securitySchemeName = "BearerAuth";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securitySchemeName);
+        Components components = new Components()
+                .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                        .name(securitySchemeName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
 
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("Bearer Token", apiKey))
+                .info(new Info()
+                        .title("온-동네 API 명세서")
+                        .description("온-동네 백엔드 API 서버의 명세서입니다.")
+                        .version("v1.0.0"))
                 .addSecurityItem(securityRequirement)
-                .info(apiInfo());
-    }
-
-    private Info apiInfo() {
-        return new Info()
-                .title("On-Dongnae API Swagger")
-                .description("온동네 프로젝트 API 명세서")
-                .version("1.0.0");
+                .components(components);
     }
 }

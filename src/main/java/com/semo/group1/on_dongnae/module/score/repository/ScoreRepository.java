@@ -51,4 +51,7 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    // 특정 유저의 점수 이력 조회 (최신순)
+    List<Score> findByUser_IdOrderByCreatedAtDesc(Long userId);
 }
