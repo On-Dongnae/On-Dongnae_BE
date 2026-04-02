@@ -1,5 +1,6 @@
 package com.semo.group1.on_dongnae.module.score.service;
 
+import com.semo.group1.on_dongnae.module.region.repository.RegionRepository;
 import com.semo.group1.on_dongnae.module.score.cache.RankingCache;
 import com.semo.group1.on_dongnae.module.score.dto.UserRanking;
 import com.semo.group1.on_dongnae.module.score.dto.RegionRanking;
@@ -7,13 +8,10 @@ import com.semo.group1.on_dongnae.entity.Region;
 import com.semo.group1.on_dongnae.entity.Score;
 import com.semo.group1.on_dongnae.entity.User;
 import com.semo.group1.on_dongnae.entity.enums.ScoreType;
-import com.semo.group1.on_dongnae.module.score.repository.UserRepository;
 import com.semo.group1.on_dongnae.module.score.repository.ScoreRepository;
-import com.semo.group1.on_dongnae.module.score.repository.RegionRepository;
 
+import com.semo.group1.on_dongnae.module.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

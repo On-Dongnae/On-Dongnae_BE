@@ -3,7 +3,6 @@ package com.semo.group1.on_dongnae.module.score.controller;
 
 import com.semo.group1.on_dongnae.module.score.dto.RegionRanking;
 import com.semo.group1.on_dongnae.module.score.dto.UserRanking;
-import com.semo.group1.on_dongnae.module.score.repository.UserRepository;
 import com.semo.group1.on_dongnae.module.score.service.ScoreService;
 
 import lombok.RequiredArgsConstructor;
