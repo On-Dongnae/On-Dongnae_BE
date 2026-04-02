@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -39,9 +41,9 @@ public class GlobalExceptionHandler {
     // 4. 그 외 예상치 못한 예외 처리 (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-
+        log.error("Unhandled Exception: ", e);
         return ResponseEntity
                 .internalServerError()
-                .body(ApiResponse.error(500, "서버 내부 오류가 발생했습니다."));
+                .body(ApiResponse.error(500, "서버 내부 오류가 발생했습니다: " + e.getMessage()));
     }
 }

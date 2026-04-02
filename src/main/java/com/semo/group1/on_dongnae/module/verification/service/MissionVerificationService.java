@@ -10,6 +10,7 @@ import com.semo.group1.on_dongnae.entity.enums.VerificationStatus;
 import com.semo.group1.on_dongnae.global.exception.CustomException;
 import com.semo.group1.on_dongnae.global.exception.ErrorCode;
 import com.semo.group1.on_dongnae.global.security.SecurityUtil;
+import com.semo.group1.on_dongnae.global.aws.S3UploadService;
 import com.semo.group1.on_dongnae.module.mission.repository.UserMissionRepository;
 import com.semo.group1.on_dongnae.module.verification.dto.VerificationDto;
 import com.semo.group1.on_dongnae.module.verification.repository.MissionVerificationRepository;
