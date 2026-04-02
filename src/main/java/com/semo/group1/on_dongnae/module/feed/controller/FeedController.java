@@ -53,7 +53,19 @@ public class FeedController {
     @GetMapping("/{feedId}")
     public ResponseEntity<ApiResponse<FeedResponseDto>> getFeed(@PathVariable("feedId") Long feedId) {
         FeedResponseDto response = feedService.getFeed(feedId);
-        return ResponseEntity.ok(ApiResponse.ok("피드 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.ok("피드 상세 조회 성공", response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getMyFeeds() {
+        List<FeedResponseDto> response = feedService.getMyFeeds();
+        return ResponseEntity.ok(ApiResponse.ok("내가 작성한 피드 조회 성공", response));
+    }
+
+    @GetMapping("/my-comments")
+    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getMyCommentedFeeds() {
+        List<FeedResponseDto> response = feedService.getMyCommentedFeeds();
+        return ResponseEntity.ok(ApiResponse.ok("내가 댓글을 작성한 피드 조회 성공", response));
     }
 
     // 4. 피드 수정
@@ -72,5 +84,19 @@ public class FeedController {
     public ResponseEntity<ApiResponse<Void>> deleteFeed(@PathVariable("feedId") Long feedId) {
         feedService.deleteFeed(feedId);
         return ResponseEntity.ok(ApiResponse.ok("피드가 삭제되었습니다."));
+    }
+
+    // 6. 피드 좋아요 추가
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<ApiResponse<FeedResponseDto>> plusLike(@PathVariable("feedId") Long feedId) {
+        FeedResponseDto response = feedService.plusLike(feedId);
+        return ResponseEntity.ok(ApiResponse.ok("피드 좋아요 추가 성공", response));
+    }
+
+    // 7. 피드 좋아요 취소
+    @PostMapping("/{feedId}/unlike")
+    public ResponseEntity<ApiResponse<FeedResponseDto>> minusLike(@PathVariable("feedId") Long feedId) {
+        FeedResponseDto response = feedService.minusLike(feedId);
+        return ResponseEntity.ok(ApiResponse.ok("피드 좋아요 취소 성공", response));
     }
 }

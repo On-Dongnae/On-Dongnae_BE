@@ -70,7 +70,7 @@ public class FeedService {
     public List<FeedResponseDto> getFeeds() {
         return feedRepository.findByIsDeletedFalseOrderByCreatedAtDesc()
                 .stream()
-                .map(FeedResponseDto::fromEntity)
+                .map(FeedResponseDto::fromEntityForList)
                 .collect(Collectors.toList());
     }
 
@@ -133,5 +133,49 @@ public class FeedService {
         }
 
         feed.markAsDeleted();
+    }
+
+    @Transactional
+    public FeedResponseDto plusLike(Long feedId) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FEED_NOT_FOUND));
+
+        if (feed.getIsDeleted()) {
+            throw new CustomException(ErrorCode.FEED_NOT_FOUND);
+        }
+
+        feed.plusLike();
+        return FeedResponseDto.fromEntity(feed);
+    }
+
+    @Transactional
+    public FeedResponseDto minusLike(Long feedId) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FEED_NOT_FOUND));
+
+        if (feed.getIsDeleted()) {
+            throw new CustomException(ErrorCode.FEED_NOT_FOUND);
+        }
+
+        feed.minusLike();
+        return FeedResponseDto.fromEntity(feed);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FeedResponseDto> getMyFeeds() {
+        User user = securityUtil.getCurrentUser();
+        return feedRepository.findByUserAndIsDeletedFalseOrderByCreatedAtDesc(user)
+                .stream()
+                .map(FeedResponseDto::fromEntityForList)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<FeedResponseDto> getMyCommentedFeeds() {
+        User user = securityUtil.getCurrentUser();
+        return feedRepository.findMyCommentedFeeds(user)
+                .stream()
+                .map(FeedResponseDto::fromEntityForList)
+                .collect(Collectors.toList());
     }
 }
