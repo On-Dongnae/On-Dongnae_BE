@@ -53,4 +53,5 @@ public class UserMission {
             this.completedAt = LocalDateTime.now();
         }
     }
+
 }

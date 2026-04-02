@@ -1,7 +1,10 @@
 package com.semo.group1.on_dongnae.module.score.service;
 
+import com.semo.group1.on_dongnae.global.exception.CustomException;
+import com.semo.group1.on_dongnae.global.exception.ErrorCode;
 import com.semo.group1.on_dongnae.module.region.repository.RegionRepository;
 import com.semo.group1.on_dongnae.module.score.cache.RankingCache;
+import com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto;
 import com.semo.group1.on_dongnae.module.score.dto.UserRanking;
 import com.semo.group1.on_dongnae.module.score.dto.RegionRanking;
 import com.semo.group1.on_dongnae.entity.Region;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,17 +37,22 @@ public class ScoreService {
     // 미션 완료(MISSION_COMPLETE) 확인 후 addMissionScore 메소드를 호출
     public void addMissionScore(Long userId, Long regionId, Integer amount, Long missionId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_MISSION_NOT_FOUND));
+        user.addScore(amount);
+        //        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         // getReferenceById(userId); => 그냥 점수만 추가 BUT 예외 처리 불가능
-        Region region = regionRepository.findById(regionId)
+
+        /*Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new IllegalArgumentException("지역을 찾을 수 없습니다."));
-        // getReferenceById(regionId); => 그냥 점수만 추가 BUT 예외 처리 불가능
+        // getReferenceById(regionId); => 그냥 점수만 추가 BUT 예외 처리 불가능 */
         Score score = Score.builder()
                 .user(user)
-                .region(region)
+                .region(user.getRegion()) // call 간편화
                 .amount(amount)
                 .type(ScoreType.MISSION_COMPLETE)
                 .referenceId(missionId) // ID 기록
+                // 점수 누적 시간 추가
+                .createdAt(LocalDateTime.now())
                 .build();
 
         scoreRepository.save(score);
@@ -91,6 +100,17 @@ public class ScoreService {
 
 
     }
+    // 자신의 점수 데이터
+    // ex) 내 점수 : 123온도
+    public List<ScoreHistoryDto>getMyScoreHistory(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return scoreRepository.findById(userId).stream()
+                .map(ScoreHistoryDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 
 
 }

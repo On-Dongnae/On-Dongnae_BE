@@ -3,8 +3,10 @@ package com.semo.group1.on_dongnae.module.score.cache;
 import com.semo.group1.on_dongnae.module.score.dto.UserRanking;
 import com.semo.group1.on_dongnae.module.score.dto.RegionRanking;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +17,13 @@ public class RankingCache {
     // DB 반복 조회 방지
     private volatile List<UserRanking> userRankings = new ArrayList<>();
     private volatile List<RegionRanking> regionRankings = new ArrayList<>();
+    // API 대비 랭킹 저장 변수 선언
+
+    private volatile LocalDateTime lastUserUpdate; // 마지막 갱신 시간
+    private volatile int lastUserUpdateCount; // 최신 데이터 수 추가
+
+    private volatile LocalDateTime lastRegionUpdate;
+    private volatile int lastRegionUpdateCount;
 
     // 랭킹 초기화 스캐줄 수정 불가 리스트로 복사
     public void updateUserRankings(List<UserRanking> rankings) {
@@ -35,6 +44,42 @@ public class RankingCache {
     public List<RegionRanking> getRegionRankings(int n) {
         if (n>= regionRankings.size()) return regionRankings;
         return regionRankings.subList(0, n);
+    }
+    // 개인 데이터 for API
+    public void updateUserRanking(List<UserRanking> rankings) {
+
+        this.userRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
+        // 현재 시간 기록
+        this.lastUserUpdate = LocalDateTime.now();
+        // 개수기록
+        this.lastUserUpdateCount = rankings.size();
+
+    }
+
+    public LocalDateTime getLastUserUpdate() {
+        return lastUserUpdate;
+    }
+
+    public int getLastUserUpdateCount() {
+        return lastUserUpdateCount;
+    }
+    // 동네 최신 데이터 for API
+    public void updateRegionRanking(List<RegionRanking> rankings) {
+
+        this.regionRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
+        // 현재 시간 기록
+        this.lastRegionUpdate = LocalDateTime.now();
+        // 개수기록
+        this.lastRegionUpdateCount = rankings.size();
+
+    }
+
+    public LocalDateTime getLastRegionUpdate() {
+        return lastRegionUpdate;
+    }
+
+    public int getLastRegionUpdateCount() {
+        return lastRegionUpdateCount;
     }
 
 }

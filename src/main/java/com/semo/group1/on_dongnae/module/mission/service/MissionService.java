@@ -4,6 +4,7 @@ import com.semo.group1.on_dongnae.entity.Mission;
 import com.semo.group1.on_dongnae.entity.User;
 import com.semo.group1.on_dongnae.entity.UserMission;
 import com.semo.group1.on_dongnae.entity.enums.MissionType;
+import com.semo.group1.on_dongnae.entity.enums.UserMissionStatus;
 import com.semo.group1.on_dongnae.global.exception.CustomException;
 import com.semo.group1.on_dongnae.global.exception.ErrorCode;
 import com.semo.group1.on_dongnae.global.security.SecurityUtil;
@@ -11,6 +12,7 @@ import com.semo.group1.on_dongnae.module.mission.dto.MissionDto;
 import com.semo.group1.on_dongnae.module.mission.dto.UserMissionDto;
 import com.semo.group1.on_dongnae.module.mission.repository.MissionRepository;
 import com.semo.group1.on_dongnae.module.mission.repository.UserMissionRepository;
+import com.semo.group1.on_dongnae.module.score.service.ScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ public class MissionService {
     private final MissionRepository missionRepository;
     private final UserMissionRepository userMissionRepository;
     private final SecurityUtil securityUtil;
+    // ScoreService 추가
+    private final ScoreService scoreService;
 
     // 1. 활성화된 미션 전체 조회
     public List<MissionDto> getAllActiveMissions() {
@@ -109,4 +113,30 @@ public class MissionService {
                 .map(UserMissionDto::fromEntity)
                 .collect(Collectors.toList());
     }
+    // 5. 미션 완료 + 검증 후 점수 획득 (추가 코드)
+    @Transactional
+    public void verifyMission(Long userMissionId) {
+        // 5-1. 해당 유저 미션 조회
+        UserMission userMission = userMissionRepository.findById(userMissionId)
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_MISSION_NOT_FOUND));
+
+        // 5-2. 이미 검증된 미션인지 조회
+        if (userMission.getStatus() == UserMissionStatus.VERIFIED) {
+            throw new CustomException(ErrorCode.ALREADY_VERIFIED);
+        }
+
+        // 5-3. 검증 성공 시 미션 상태 변경
+        userMission.updateStatus(UserMissionStatus.VERIFIED);
+
+        // 5-4. ScoreService 호출 => 점수 획득
+        scoreService.addMissionScore(
+                userMission.getUser().getId(),
+                userMission.getUser().getRegion().getId(),
+                userMission.getMission().getPointAmount(),
+                userMission.getMission().getId()
+        );
+
+
+    }
+
 }

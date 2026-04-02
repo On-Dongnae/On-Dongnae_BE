@@ -47,4 +47,6 @@ public class User extends BaseEntity {
     @Column(name = "total_score", nullable = false)
     @Builder.Default
     private Integer totalScore = 0;
+
+
 }
