@@ -16,20 +16,24 @@ import java.util.Map;
 @RequestMapping("/api/admin/rankings") // 관리자용 경로
 @RequiredArgsConstructor
 public class AdminController {
-    private final RankingCache rankingCache; // 창고(Cache)를 주입받습니다.
+    private final RankingCache rankingCache; // Cache에서 데이터 추출
 
     // 프론트엔드에 API 전송
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getRankingStatus() {
 
-        // 1. Cache에서 데이터 추출
-        LocalDateTime lastUserUpdate = rankingCache.getLastUserUpdate();
-        int lastUserUpdateCount = rankingCache.getLastUserUpdateCount();
+        // 1. 개인 랭킹 상태
+
+
 
         // 2. Map으로 포장 for 가독성
         Map<String, Object> data = new HashMap<>();
-        data.put("lastUserUpdate", lastUserUpdate);
-        data.put("lastUserUpdateCount", lastUserUpdateCount);
+
+        data.put("lastUserUpdate", rankingCache.getLastUserUpdate());
+        data.put("lastUserUpdateCount", rankingCache.getLastUserUpdateCount());
+
+        data.put("lastUserUpdate", rankingCache.getLastRegionUpdate());
+        data.put("lastUserUpdateCount", rankingCache.getLastRegionUpdateCount());
 
         // 3. ApiResponse return <= 프론트의 요청
         return ResponseEntity.ok(ApiResponse.ok("랭킹 상태 정보입니다.", data));

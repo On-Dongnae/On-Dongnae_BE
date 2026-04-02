@@ -28,11 +28,15 @@ public class RankingCache {
     // 랭킹 초기화 스캐줄 수정 불가 리스트로 복사
     public void updateUserRankings(List<UserRanking> rankings) {
         this.userRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
+        this.lastUserUpdate = LocalDateTime.now();
+        this.lastUserUpdateCount = rankings.size();
 
     }
 
     public void updateRegionRankings(List<RegionRanking> rankings) {
         this.regionRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
+        this.lastRegionUpdate = LocalDateTime.now();
+        this.lastRegionUpdateCount = rankings.size();
     }
 
     // 서비스에서 데이터를 가져갈 때 for 상위 n명 유저
@@ -45,41 +49,19 @@ public class RankingCache {
         if (n>= regionRankings.size()) return regionRankings;
         return regionRankings.subList(0, n);
     }
+
     // 개인 최신 데이터 for API
-    public void updateUserRanking(List<UserRanking> rankings) {
+    public LocalDateTime getLastUserUpdate() { return lastUserUpdate; }
+    public int getLastUserUpdateCount() { return lastUserUpdateCount; }
 
-        this.userRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
-        // 현재 시간 기록
-        this.lastUserUpdate = LocalDateTime.now();
-        // 개수기록
-        this.lastUserUpdateCount = rankings.size();
 
-    }
 
-    public LocalDateTime getLastUserUpdate() {
-        return lastUserUpdate;
-    }
-
-    public int getLastUserUpdateCount() {
-        return lastUserUpdateCount;
-    }
     // 동네 최신 데이터 for API
-    public void updateRegionRanking(List<RegionRanking> rankings) {
+    public LocalDateTime getLastRegionUpdate() { return lastRegionUpdate; }
+    public int getLastRegionUpdateCount() { return lastRegionUpdateCount; }
 
-        this.regionRankings = Collections.unmodifiableList(new ArrayList<>(rankings));
-        // 현재 시간 기록
-        this.lastRegionUpdate = LocalDateTime.now();
-        // 개수기록
-        this.lastRegionUpdateCount = rankings.size();
 
-    }
 
-    public LocalDateTime getLastRegionUpdate() {
-        return lastRegionUpdate;
-    }
 
-    public int getLastRegionUpdateCount() {
-        return lastRegionUpdateCount;
-    }
 
 }
