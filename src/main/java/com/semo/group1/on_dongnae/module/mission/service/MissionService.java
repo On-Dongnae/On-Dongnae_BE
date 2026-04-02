@@ -75,8 +75,11 @@ public class MissionService {
                 .map(um -> um.getMission().getId())
                 .collect(Collectors.toSet());
 
-        // 2. 전체 활성 INITIAL 미션 조회
-        List<Mission> allDailyMissions = missionRepository.findByIsActiveTrueAndType(MissionType.INITIAL);
+        // 2. 현재 배정 가능한 모든 활성 미션 조회 (INITIAL + AI_HIDDEN)
+        List<Mission> allDailyMissions = missionRepository.findAll().stream()
+                .filter(m -> m.getIsActive() && 
+                        (m.getType() == MissionType.INITIAL || m.getType() == MissionType.AI_HIDDEN))
+                .collect(Collectors.toList());
 
         // 3. 아직 배정되지 않은 미션 필터링
         List<Mission> missionsToAssign = allDailyMissions.stream()
