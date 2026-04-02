@@ -4,6 +4,7 @@ import com.semo.group1.on_dongnae.global.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,7 +28,15 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(400, e.getMessage()));
     }
 
-    // 3. 그 외 예상치 못한 예외 처리 (500 Internal Server Error)
+    // 3. 존재하지 않는 리소스 요청 처리 (404 Not Found) - Swagger CSS 등 정적 리소스 로드 에러 방지
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+        return ResponseEntity
+                .status(404)
+                .body(ApiResponse.error(404, "요청한 리소스를 찾을 수 없습니다."));
+    }
+
+    // 4. 그 외 예상치 못한 예외 처리 (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
 

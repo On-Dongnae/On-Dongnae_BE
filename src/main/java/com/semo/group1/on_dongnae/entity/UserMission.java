@@ -46,4 +46,11 @@ public class UserMission {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public void updateStatus(UserMissionStatus status) {
+        this.status = status;
+        if (status == UserMissionStatus.VERIFIED) {
+            this.completedAt = LocalDateTime.now();
+        }
+    }
 }
