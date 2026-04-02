@@ -1,4 +1,4 @@
-package com.semo.group1.on_dongnae.module.verification.config;
+package com.semo.group1.on_dongnae.global.aws;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

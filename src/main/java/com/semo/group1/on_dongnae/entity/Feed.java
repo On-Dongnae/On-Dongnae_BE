@@ -50,4 +50,14 @@ public class Feed extends BaseEntity {
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+
+    public void update(String title, String content, FeedGroup type) {
+        if (title != null) this.title = title;
+        if (content != null) this.content = content;
+        if (type != null) this.type = type;
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
 }

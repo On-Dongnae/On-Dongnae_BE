@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: "optional:file:.env[.properties]"
   # PostgreSQL (로컬 Docker)
   datasource:
     url: jdbc:postgresql://localhost:5432/on_dongnae
@@ -37,4 +39,4 @@ cloud:
     region:
       static: ${AWS_REGION:ap-northeast-2}
     s3:
-      bucket: ${S3_BUCKET_NAME:default_bucket}
+      bucket: ${S3_BUCKET_NAME:odn-bucket}

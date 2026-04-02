@@ -1,5 +1,6 @@
-package com.semo.group1.on_dongnae.module.verification.service;
+package com.semo.group1.on_dongnae.global.aws;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,5 +51,11 @@ public class S3UploadService {
 
         // 외부 접근 가능한 S3 URL 문자열 변환
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, s3FileName);
+    }
+
+    @PostConstruct
+    public void checkEnv() {
+        log.info("현재 적용된 버킷 이름: {}", bucket);
+        log.info("현재 적용된 리전: {}", region);
     }
 }
