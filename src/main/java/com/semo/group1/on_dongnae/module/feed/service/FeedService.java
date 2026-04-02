@@ -134,4 +134,30 @@ public class FeedService {
 
         feed.markAsDeleted();
     }
+
+    @Transactional
+    public FeedResponseDto plusLike(Long feedId) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FEED_NOT_FOUND));
+
+        if (feed.getIsDeleted()) {
+            throw new CustomException(ErrorCode.FEED_NOT_FOUND);
+        }
+
+        feed.plusLike();
+        return FeedResponseDto.fromEntity(feed);
+    }
+
+    @Transactional
+    public FeedResponseDto minusLike(Long feedId) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FEED_NOT_FOUND));
+
+        if (feed.getIsDeleted()) {
+            throw new CustomException(ErrorCode.FEED_NOT_FOUND);
+        }
+
+        feed.minusLike();
+        return FeedResponseDto.fromEntity(feed);
+    }
 }

@@ -73,4 +73,18 @@ public class FeedController {
         feedService.deleteFeed(feedId);
         return ResponseEntity.ok(ApiResponse.ok("피드가 삭제되었습니다."));
     }
+
+    // 6. 피드 좋아요 추가
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<ApiResponse<FeedResponseDto>> plusLike(@PathVariable("feedId") Long feedId) {
+        FeedResponseDto response = feedService.plusLike(feedId);
+        return ResponseEntity.ok(ApiResponse.ok("피드 좋아요 추가 성공", response));
+    }
+
+    // 7. 피드 좋아요 취소
+    @PostMapping("/{feedId}/unlike")
+    public ResponseEntity<ApiResponse<FeedResponseDto>> minusLike(@PathVariable("feedId") Long feedId) {
+        FeedResponseDto response = feedService.minusLike(feedId);
+        return ResponseEntity.ok(ApiResponse.ok("피드 좋아요 취소 성공", response));
+    }
 }

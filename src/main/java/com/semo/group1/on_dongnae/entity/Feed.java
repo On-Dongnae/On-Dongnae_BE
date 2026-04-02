@@ -57,6 +57,16 @@ public class Feed extends BaseEntity {
         if (type != null) this.type = type;
     }
 
+    public void plusLike() {
+        this.likeCount++;
+    }
+
+    public void minusLike() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
     public void markAsDeleted() {
         this.isDeleted = true;
     }
