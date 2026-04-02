@@ -2,6 +2,7 @@ package com.semo.group1.on_dongnae.module.feed.repository;
 
 import com.semo.group1.on_dongnae.entity.Feed;
 import com.semo.group1.on_dongnae.entity.User;
+import com.semo.group1.on_dongnae.entity.enums.FeedGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +10,17 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
+    // 전체 - 최신순
     List<Feed> findByIsDeletedFalseOrderByCreatedAtDesc();
+    
+    // 전체 - 좋아요순
+    List<Feed> findByIsDeletedFalseOrderByLikeCountDescCreatedAtDesc();
+
+    // 타입별 - 최신순
+    List<Feed> findByTypeAndIsDeletedFalseOrderByCreatedAtDesc(FeedGroup type);
+
+    // 타입별 - 좋아요순
+    List<Feed> findByTypeAndIsDeletedFalseOrderByLikeCountDescCreatedAtDesc(FeedGroup type);
     
     // 1. 내가 작성한 글
     List<Feed> findByUserAndIsDeletedFalseOrderByCreatedAtDesc(User user);

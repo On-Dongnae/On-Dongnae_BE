@@ -3,6 +3,8 @@ package com.semo.group1.on_dongnae.module.feed.service;
 import com.semo.group1.on_dongnae.entity.Feed;
 import com.semo.group1.on_dongnae.entity.FeedImage;
 import com.semo.group1.on_dongnae.entity.User;
+import com.semo.group1.on_dongnae.entity.enums.FeedGroup;
+import com.semo.group1.on_dongnae.entity.enums.FeedSort;
 import com.semo.group1.on_dongnae.global.aws.S3UploadService;
 import com.semo.group1.on_dongnae.global.exception.CustomException;
 import com.semo.group1.on_dongnae.global.exception.ErrorCode;
@@ -67,9 +69,25 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public List<FeedResponseDto> getFeeds() {
-        return feedRepository.findByIsDeletedFalseOrderByCreatedAtDesc()
-                .stream()
+    public List<FeedResponseDto> getFeeds(FeedGroup type, FeedSort sortBy) {
+        List<Feed> feeds;
+        boolean isLikes = (sortBy == FeedSort.LIKES);
+
+        if (type != null) {
+            if (isLikes) {
+                feeds = feedRepository.findByTypeAndIsDeletedFalseOrderByLikeCountDescCreatedAtDesc(type);
+            } else {
+                feeds = feedRepository.findByTypeAndIsDeletedFalseOrderByCreatedAtDesc(type);
+            }
+        } else {
+            if (isLikes) {
+                feeds = feedRepository.findByIsDeletedFalseOrderByLikeCountDescCreatedAtDesc();
+            } else {
+                feeds = feedRepository.findByIsDeletedFalseOrderByCreatedAtDesc();
+            }
+        }
+        
+        return feeds.stream()
                 .map(FeedResponseDto::fromEntityForList)
                 .collect(Collectors.toList());
     }

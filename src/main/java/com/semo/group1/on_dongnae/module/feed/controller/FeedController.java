@@ -1,6 +1,8 @@
 package com.semo.group1.on_dongnae.module.feed.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.semo.group1.on_dongnae.entity.enums.FeedGroup;
+import com.semo.group1.on_dongnae.entity.enums.FeedSort;
 import com.semo.group1.on_dongnae.global.common.ApiResponse;
 import com.semo.group1.on_dongnae.global.exception.CustomException;
 import com.semo.group1.on_dongnae.global.exception.ErrorCode;
@@ -44,8 +46,10 @@ public class FeedController {
 
     // 2. 전체 피드 목록 조회 (단순 List)
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getFeeds() {
-        List<FeedResponseDto> response = feedService.getFeeds();
+    public ResponseEntity<ApiResponse<List<FeedResponseDto>>> getFeeds(
+            @RequestParam(value = "type", required = false) FeedGroup type,
+            @RequestParam(value = "sortBy", defaultValue = "LATEST") FeedSort sortBy) {
+        List<FeedResponseDto> response = feedService.getFeeds(type, sortBy);
         return ResponseEntity.ok(ApiResponse.ok("피드 목록 조회 성공", response));
     }
 
