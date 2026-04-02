@@ -88,9 +88,21 @@ public class ScoreService {
         Long rank = scoreRepository.findMyRank(userId, start, end);
         // 미션 수행을 하나도 안 한 경우 => -1 return (Long type)
         return rank == null ? -1L : rank;
-
-
     }
 
+    // 내 점수 + 이력 조회
+    public com.semo.group1.on_dongnae.module.score.dto.MyScoreResponseDto getMyScoreHistory(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        List<com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto> history =
+                scoreRepository.findByUser_IdOrderByCreatedAtDesc(userId).stream()
+                        .map(com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto::fromEntity)
+                        .collect(java.util.stream.Collectors.toList());
+
+        return com.semo.group1.on_dongnae.module.score.dto.MyScoreResponseDto.builder()
+                .totalScore(user.getTotalScore())
+                .history(history)
+                .build();
+    }
 }

@@ -25,6 +25,7 @@ public enum ErrorCode {
     USER_MISSION_NOT_FOUND("배정된 미션을 찾을 수 없습니다.", 404),
     FEED_NOT_FOUND("존재하지 않는 피드입니다.", 404),
     COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", 404),
+    VERIFICATION_NOT_FOUND("존재하지 않는 인증 정보입니다.", 404),
 
     // 409 Conflict
     DUPLICATE_EMAIL("이미 가입된 이메일입니다.", 409),

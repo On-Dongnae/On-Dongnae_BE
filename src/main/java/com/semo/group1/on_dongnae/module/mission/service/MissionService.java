@@ -44,20 +44,42 @@ public class MissionService {
         return MissionDto.fromEntity(mission);
     }
 
-    // 3. 오늘의 미션 일괄 배정 (INITIAL 타입 모두 배정)
+    // 3. 오늘의 미션 조회 (자동 배정 포함)
+    @Transactional
+    public List<UserMissionDto> getTodayMissions() {
+        User user = securityUtil.getCurrentUser();
+        LocalDate today = LocalDate.now();
+
+        // 1. 해당 유저가 오늘 배정받은 미션 목록 조회
+        List<UserMission> todayMissions = userMissionRepository.findByUserAndAssignedDate(user, today);
+
+        // 2. 만약 오늘 배정받은 미션이 하나도 없다면 (오늘 첫 접속), 자동 배정 수행
+        if (todayMissions.isEmpty()) {
+            return assignDailyMission();
+        }
+
+        // 3. 이미 배정된 미션이 있다면 그대로 반환
+        return todayMissions.stream()
+                .map(UserMissionDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 4. 오늘의 미션 일괄 배정 (INITIAL 타입 모두 배정)
     @Transactional
     public List<UserMissionDto> assignDailyMission() {
         User user = securityUtil.getCurrentUser();
         LocalDate today = LocalDate.now();
 
-        // 1. 해당 유저가 오늘 배정받은 미션 목록 조회
-        List<UserMission> alreadyAssigned = userMissionRepository.findByUserAndAssignedDate(user, today);
-        java.util.Set<Long> assignedMissionIds = alreadyAssigned.stream()
+        // 1. 해당 유저가 오늘 이미 배정받은 미션 ID 목록 조회 (중복 방지)
+        java.util.Set<Long> assignedMissionIds = userMissionRepository.findByUserAndAssignedDate(user, today).stream()
                 .map(um -> um.getMission().getId())
                 .collect(Collectors.toSet());
 
-        // 2. 전체 활성 INITIAL 미션 조회
-        List<Mission> allDailyMissions = missionRepository.findByIsActiveTrueAndType(MissionType.INITIAL);
+        // 2. 현재 배정 가능한 모든 활성 미션 조회 (INITIAL + AI_HIDDEN)
+        List<Mission> allDailyMissions = missionRepository.findAll().stream()
+                .filter(m -> m.getIsActive() && 
+                        (m.getType() == MissionType.INITIAL || m.getType() == MissionType.AI_HIDDEN))
+                .collect(Collectors.toList());
 
         // 3. 아직 배정되지 않은 미션 필터링
         List<Mission> missionsToAssign = allDailyMissions.stream()
@@ -77,19 +99,10 @@ public class MissionService {
 
         if (!newlyAssigned.isEmpty()) {
             userMissionRepository.saveAll(newlyAssigned);
-        } else if (alreadyAssigned.isEmpty()) {
-            // 오늘 배정받은 것도 없고 배정할 것도 없으면 미션이 없는 것
-            throw new CustomException(ErrorCode.MISSION_NOT_FOUND);
-        } else {
-            // 새로 배정할 건 없는데 이미 받은 게 있으면 그대로 기존 목록 반환
-            // (혹은 기존처럼 ALREADY_ASSIGNED 에러를 던질 수 있지만, 목록을 보여주는 게 더 자연스럽습니다)
         }
 
-        // 5. 이미 받은 미션 + 오늘 새로 받은 미션 합쳐서 반환
-        List<UserMission> result = new java.util.ArrayList<>(alreadyAssigned);
-        result.addAll(newlyAssigned);
-
-        return result.stream()
+        // 5. 오늘 날짜의 전체 미션 목록 다시 조회하여 반환
+        return userMissionRepository.findByUserAndAssignedDate(user, today).stream()
                 .map(UserMissionDto::fromEntity)
                 .collect(Collectors.toList());
     }

@@ -1,6 +1,6 @@
 package com.semo.group1.on_dongnae.module.region.service;
 
-import com.semo.group1.on_dongnae.module.region.dto.RegionDto;
+import com.semo.group1.on_dongnae.module.region.dto.RegionResponseDto;
 import com.semo.group1.on_dongnae.module.region.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,22 +11,22 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class RegionService {
 
     private final RegionRepository regionRepository;
 
-    public List<RegionDto> getAllRegions() {
-        return regionRepository.findAll()
-                .stream()
-                .map(RegionDto::fromEntity)
+    @Transactional(readOnly = true)
+    public List<RegionResponseDto> getAllRegions() {
+        return regionRepository.findAll().stream()
+                .map(RegionResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public List<RegionDto> searchRegions(String keyword) {
-        return regionRepository.findByDistrictContaining(keyword)
+    @Transactional(readOnly = true)
+    public List<RegionResponseDto> searchRegions(String keyword) {
+        return regionRepository.findByCityContainingOrDistrictContaining(keyword, keyword)
                 .stream()
-                .map(RegionDto::fromEntity)
+                .map(RegionResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 }

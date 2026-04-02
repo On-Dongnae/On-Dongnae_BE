@@ -47,6 +47,17 @@ public class MissionVerification {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
 
+    public void approve() {
+        this.status = VerificationStatus.APPROVED;
+        this.verifiedAt = LocalDateTime.now();
+    }
+
+    public void reject(String reason) {
+        this.status = VerificationStatus.REJECTED;
+        this.rejectionReason = reason;
+        this.verifiedAt = LocalDateTime.now();
+    }
+
     @OneToMany(mappedBy = "missionVerification", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<VerificationImage> images = new ArrayList<>();
