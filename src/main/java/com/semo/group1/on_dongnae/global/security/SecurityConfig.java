@@ -70,7 +70,7 @@ public class SecurityConfig {
                         // 회원가입/로그인 창, 동네 검색은 누구나 사용 가능
                         .requestMatchers("/api/users/signup", "/api/users/login", "/api/regions", "/api/regions/search", "/error").permitAll()
                         // AI 스케줄러 통신 API 열기
-                        .requestMatchers("/api/admin/verifications", "/api/admin/verifications/**/ai-result", "/api/admin/missions").permitAll()
+                        .requestMatchers("/api/admin/verifications", "/api/admin/verifications/*/ai-result", "/api/admin/missions").permitAll()
                         // 그 외에 피드 달기, 미션하기 등등 '핵심' 기능은 무조건 JWT 받은 사람만 사용 가능
                         .anyRequest().authenticated()
                 )
