@@ -37,9 +37,9 @@ public class RankingScheduler {
         return getStartOfMonth().plusMonths(1);
     }
 
-    // 2. 개인 랭킹 : 10분에 1번씩 업데이트
-    @Scheduled(cron = "0 0/10 * * * *")
-    public void updateUserRankingCache() { // 괄호 안 파라미터(int m) 제거 ✅
+    // 2. 개인 랭킹 : 1분에 1번씩 업데이트
+    @Scheduled(cron = "0 0/1 * * * *")
+    public void updateUserRankingCache() {
         // 상위 n명의 user들을 임시 저장(캐싱)
         List<UserRanking> rankings = scoreRepository.findUserRankings(
                 getStartOfMonth(), getNextMonth(), PageRequest.of(0, USER_RANKING_LIMIT));
@@ -52,8 +52,8 @@ public class RankingScheduler {
     }
 
     // 3. 동네 랭킹 : 매일 0시(자정)에 1번 업데이트
-    @Scheduled(cron = "0 0 0 * * *")
-    public void updateRegionRankingCache() { // 괄호 안 파라미터(int m) 제거 ✅
+    @Scheduled(cron = "0 0/1 * * * *")
+    public void updateRegionRankingCache() {
         // 상위 n개의 동네들을 임시 저장(캐싱)
         List<RegionRanking> rankings = scoreRepository.findRegionRankings(
                 getStartOfMonth(), getNextMonth(), PageRequest.of(0, REGION_RANKING_LIMIT));

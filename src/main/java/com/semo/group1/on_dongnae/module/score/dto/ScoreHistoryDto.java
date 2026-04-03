@@ -14,14 +14,16 @@ public class ScoreHistoryDto {
     private Integer amount;
     private ScoreType type;
     private Long referenceId;
+    private String missionName; // 미션 제목 필드 추가
     private LocalDateTime createdAt;
 
-    public static ScoreHistoryDto fromEntity(Score score) {
+    public static ScoreHistoryDto fromEntity(Score score, String missionName) {
         return ScoreHistoryDto.builder()
                 .id(score.getId())
                 .amount(score.getAmount())
                 .type(score.getType())
                 .referenceId(score.getReferenceId())
+                .missionName(missionName)
                 .createdAt(score.getCreatedAt())
                 .build();
     }

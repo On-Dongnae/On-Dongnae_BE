@@ -1,6 +1,8 @@
 package com.semo.group1.on_dongnae.module.score.service;
 
 import com.semo.group1.on_dongnae.module.region.repository.RegionRepository;
+import com.semo.group1.on_dongnae.module.admin.dto.AdminUserResponseDto;
+import com.semo.group1.on_dongnae.module.mission.repository.MissionRepository;
 import com.semo.group1.on_dongnae.module.score.cache.RankingCache;
 import com.semo.group1.on_dongnae.module.score.dto.UserRanking;
 import com.semo.group1.on_dongnae.module.score.dto.RegionRanking;
@@ -27,6 +29,7 @@ public class ScoreService {
     private final ScoreRepository scoreRepository;
     private final UserRepository userRepository;
     private final RegionRepository regionRepository;
+    private final MissionRepository missionRepository;
     private final RankingCache rankingCache;
 
     @Transactional
@@ -49,6 +52,7 @@ public class ScoreService {
         scoreRepository.save(score);
 
     }
+
     @Transactional
     // 관리자 요청(ADMIN_ADJUST) 후 adjustScoreMyAdmin 메소드를 호출 ex) 강제 개입
     public void adjustScoreByAdmin(Long userId, Long regionId, Integer amount, Long adminId) {
@@ -70,12 +74,12 @@ public class ScoreService {
     }
 
     // 누적 점수 상위 n명의 user in 모든 지역
-    public List<UserRanking>getTopNUserRanking(int n) {
+    public List<UserRanking> getTopNUserRanking(int n) {
         return rankingCache.getUserRankings(n);
     }
 
     // 누적 점수 상위 n개의 region
-    public List<RegionRanking>getTopNRegionRanking(int n) {
+    public List<RegionRanking> getTopNRegionRanking(int n) {
         return rankingCache.getRegionRankings(n);
     }
 
@@ -95,10 +99,21 @@ public class ScoreService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        List<com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto> history =
-                scoreRepository.findByUser_IdOrderByCreatedAtDesc(userId).stream()
-                        .map(com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto::fromEntity)
-                        .collect(java.util.stream.Collectors.toList());
+        List<Score> scores = scoreRepository.findByUser_IdOrderByCreatedAtDesc(userId);
+
+        List<com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto> history = scores.stream()
+                .map(score -> {
+                    String missionName = "알 수 없는 항목";
+                    if (score.getType() == ScoreType.MISSION_COMPLETE) {
+                        missionName = missionRepository.findById(score.getReferenceId())
+                                .map(m -> m.getName())
+                                .orElse("삭제된 미션");
+                    } else if (score.getType() == ScoreType.ADMIN_ADJUST) {
+                        missionName = "관리자 조정 점수";
+                    }
+                    return com.semo.group1.on_dongnae.module.score.dto.ScoreHistoryDto.fromEntity(score, missionName);
+                })
+                .collect(java.util.stream.Collectors.toList());
 
         return com.semo.group1.on_dongnae.module.score.dto.MyScoreResponseDto.builder()
                 .totalScore(user.getTotalScore())
