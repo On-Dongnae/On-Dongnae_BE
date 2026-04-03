@@ -38,7 +38,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 프론트 로컬 환경(3000, 5173)과 향후 사용될 배포 도메인 허용
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "https://on-dongnae.site", "https://www.on-dongnae.site"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "https://api.on-dongnae.site","https://on-dongnae.site", "https://www.on-dongnae.site"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
