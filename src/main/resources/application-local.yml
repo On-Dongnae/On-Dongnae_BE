@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: "optional:file:.env[.properties]"
   # PostgreSQL (로컬 Docker)
   datasource:
     url: jdbc:postgresql://localhost:5432/on_dongnae
@@ -14,7 +16,7 @@ spring:
   # JPA (로컬)
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
 
   # Redis (로컬 Docker)
@@ -27,3 +29,14 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+  # AWS S3 설정
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY:default_access_key}
+      secret-key: ${AWS_SECRET_KEY:default_secret_key}
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+    s3:
+      bucket: ${S3_BUCKET_NAME:odn-bucket}

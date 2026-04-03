@@ -22,7 +22,7 @@ public class UserMission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_mission_id")
-    private Long userMissionId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,4 +46,11 @@ public class UserMission {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public void updateStatus(UserMissionStatus status) {
+        this.status = status;
+        if (status == UserMissionStatus.VERIFIED) {
+            this.completedAt = LocalDateTime.now();
+        }
+    }
 }

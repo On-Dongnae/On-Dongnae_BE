@@ -19,7 +19,7 @@ public class Feed extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_id")
-    private Long feedId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -50,4 +50,24 @@ public class Feed extends BaseEntity {
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+
+    public void update(String title, String content, FeedGroup type) {
+        if (title != null) this.title = title;
+        if (content != null) this.content = content;
+        if (type != null) this.type = type;
+    }
+
+    public void plusLike() {
+        this.likeCount++;
+    }
+
+    public void minusLike() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
 }

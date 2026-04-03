@@ -16,7 +16,7 @@ public class VerificationImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "verification_image_id")
-    private Long verificationImageId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_verification_id", nullable = false)

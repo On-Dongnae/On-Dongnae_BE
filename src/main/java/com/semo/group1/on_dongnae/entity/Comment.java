@@ -15,7 +15,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    private Long commentId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feed_id", nullable = false)
@@ -39,4 +39,24 @@ public class Comment {
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+    public void update(String content) {
+        if (content != null) {
+            this.content = content;
+        }
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
+
+    public void plusLike() {
+        this.likeCount++;
+    }
+
+    public void minusLike() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 }
