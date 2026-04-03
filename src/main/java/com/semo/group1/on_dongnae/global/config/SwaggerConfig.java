@@ -27,6 +27,8 @@ public class SwaggerConfig {
                         .title("온-동네 API 명세서")
                         .description("온-동네 백엔드 API 서버의 명세서입니다.")
                         .version("v1.0.0"))
+                .addServersItem(new io.swagger.v3.oas.models.servers.Server().url("https://api.on-dongnae.site").description("Production Server"))
+                .addServersItem(new io.swagger.v3.oas.models.servers.Server().url("http://localhost:8080").description("Local Server"))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
