@@ -1,6 +1,7 @@
 package com.semo.group1.on_dongnae.module.admin.controller;
 
 import com.semo.group1.on_dongnae.global.common.ApiResponse;
+import com.semo.group1.on_dongnae.module.admin.dto.AdminUserResponseDto;
 import com.semo.group1.on_dongnae.module.admin.dto.SuspensionRequestDto;
 import com.semo.group1.on_dongnae.module.admin.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Admin (관리자)", description = "관리자 전용 기능 (유저 관리)")
 @RestController
 @RequestMapping("/api/admin/users")
@@ -16,6 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
+
+    @Operation(summary = "전체 유저 리스트 조회", description = "관리자가 서비스의 모든 유저 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<AdminUserResponseDto>>> getUserList() {
+        List<AdminUserResponseDto> users = adminUserService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.ok("유저 리스트 조회 성공", users));
+    }
 
     @Operation(summary = "유저 정지", description = "관리자가 특정 유저를 서비스 이용 불가능 상태로 정지시킵니다.")
     @PostMapping("/{userId}/suspend")
