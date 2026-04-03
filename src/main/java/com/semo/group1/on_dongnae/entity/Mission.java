@@ -42,7 +42,8 @@ public class Mission extends BaseEntity {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    public void update(String name, String description, com.semo.group1.on_dongnae.entity.enums.MissionType type, Integer pointAmount, LocalDate startDate, LocalDate endDate) {
+    public void update(String name, String description, MissionType type, Integer pointAmount, LocalDate startDate,
+            LocalDate endDate) {
         this.name = name;
         this.description = description;
         this.type = type;

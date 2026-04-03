@@ -10,6 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // 웹 전체 적용
@@ -29,10 +34,29 @@ public class SecurityConfig {
         return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 프론트 로컬 환경(3000, 5173)과 향후 사용될 배포 도메인 허용
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "https://on-dongnae.site", "https://www.on-dongnae.site"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        // 프론트엔드에서 응답 헤더의 Authorization (JWT 토큰)값을 즉시 읽을 수 있게 허용
+        configuration.setExposedHeaders(List.of("Authorization")); 
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     // 여러 Rule 구현
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // CORS 필터 및 설정 적용 (핵심)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                
                 // 1. 공격 방어 끄기 (요즘 유행하는 VIP 팔찌(JWT) 방식에서는 거의 안 쓰는 구식 방어막입니다)
                 .csrf(csrf -> csrf.disable())
 
